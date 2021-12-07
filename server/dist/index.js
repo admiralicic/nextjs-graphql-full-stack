@@ -16,6 +16,7 @@ const user_1 = require("./resolvers/user");
 const ioredis_1 = __importDefault(require("ioredis"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_redis_1 = __importDefault(require("connect-redis"));
+const cors_1 = __importDefault(require("cors"));
 const main = async () => {
     const orm = await core_1.MikroORM.init(mikro_orm_config_1.default);
     await orm.getMigrator().up();
@@ -24,6 +25,7 @@ const main = async () => {
     const redis = new ioredis_1.default(process.env.REDIS_URL);
     redis.on("connect", () => console.log("CONNECTED TO REDIS"));
     redis.on("error", (error) => console.error("REDIS ERROR :", error));
+    app.use((0, cors_1.default)({ origin: "http://localhost:3000", credentials: true }));
     app.use((0, express_session_1.default)({
         name: "qid",
         store: new RedisStore({
@@ -47,7 +49,7 @@ const main = async () => {
         }),
         context: ({ req, res }) => ({ em: orm.em, req, res }),
     });
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.listen(4000, () => {
         console.log("server started on localhost:4000");
     });

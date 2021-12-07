@@ -6,6 +6,8 @@ import React from "react";
 type InputFieldProps = {
   name: string;
   label: string;
+  placeholder?: string;
+  type?: string;
 };
 
 export const InputField: React.FC<InputFieldProps> = ({ label, ...props }) => {
